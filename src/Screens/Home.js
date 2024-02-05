@@ -35,14 +35,7 @@ export default function HomeScreen({ navigation }) {
       Alert.alert('Campo vazio');
       setPokemonNameOrId("");
     } else {
-        try{
-          const response = await Api.get(pokemonNameOrId);
-          //Alert.alert(response.data)
-          //console.log(response.data.name);
-          navigation.navigate('Details', {pokemonName: response.data.name})
-        }catch(error){
-          console.log(`ERRO: ${error}`)
-        }
+        navigation.navigate('Details', {pokemonNameOrId:pokemonNameOrId});
     }
 
   };

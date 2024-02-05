@@ -1,27 +1,63 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-   StyleSheet,
-   Text,
-   SafeAreaView,
-   View,
-   TextInput,
-   TouchableOpacity,
-   Alert,
-   Button} from 'react-native';
+  StyleSheet,
+  Text,
+  SafeAreaView,
+  View,
+  Image,
+  Alert,
+  TextInput} from 'react-native';
+
+import Api from  "../services/api";
 
 
 export default function DetailsScreen({route}) {
 
-    const pokemonName = route.params.pokemonName;
+    const pokemonNameOrId = route.params.pokemonNameOrId;
+    
+    const [name, setName] = useState('');
+    const [urlImagem, setUrlImagem] = useState();
+    const [height, setHeight] = useState('');
+    const [weight, setWeight] = useState('');
+    const [hp, setHp] = useState('');
+    const [attack, setAttack] = useState('');
+    const [defense, setDefense] = useState('');
+    const [speed, setSpeed] = useState('');
+    const [progresso, setProgresso] = useState(0);
+
+
+    async function searchPokemon() {
+        try{
+            const response = await Api.get(pokemonNameOrId);
+            setName(response.data.name.charAt(0).toUpperCase() + response.data.name.slice(1));
+            setUrlImagem(response.data.sprites.other["official-artwork"].front_default);
+            setHeight(response.data.height);
+            setWeight(response.data.weight);
+            setHp(response.data.stats[0].base_stat);
+            setAttack(response.data.stats[1].base_stat);
+            setDefense(response.data.stats[2].base_stat);
+            setSpeed(response.data.stats[5].base_stat);
+        }catch(error){
+            console.log(`ERRO: ${error}`)
+        }
+    }
+
+    searchPokemon()
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Pokedex</Text>
-      <View style={styles.content}>
-        <Text style={styles.inputText}>{pokemonName}</Text>
-      </View>
-      <StatusBar style="auto" />
+        <TextInput style={styles.title} value={name} editable={false}/>
+        <View style={styles.content}>
+        <Image source={{ uri: urlImagem }} style={styles.imagem} />
+        <TextInput style={styles.inputText} value={height.toString()} editable={false}/>
+        <TextInput style={styles.inputText} value={weight.toString()} editable={false}/>
+        <TextInput style={styles.inputText} value={hp.toString()} editable={false}/>
+        <TextInput style={styles.inputText} value={attack.toString()} editable={false}/>
+        <TextInput style={styles.inputText} value={defense.toString()} editable={false}/>
+        <TextInput style={styles.inputText} value={speed.toString()} editable={false}/>
+        </View>
+        <StatusBar style="auto" />
     </SafeAreaView>
   );
 
@@ -49,27 +85,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingBottom: 15
   },
-  input: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    fontWeight: 'bold',
-    fontSize: 16
-  },
-  buttonContainer: {
-    backgroundColor: 'orange',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  imagem: {
+    width: 200,
+    height: 200,
   },
 });
